@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Поиск ссылок в тексте элемента HTML</title>
+    <style>
+        #input-text {
+            width: 100%; /* Задаем ширину поля ввода на всю доступную ширину */
+            height: 100%; /* Устанавливаем желаемую высоту поля ввода текста, например, 300px */
+        }
+    </style>
+</head>
+<body>
+    <textarea id="input-text"></textarea><br>
+    <script>
+        function findRefs() {
+            var inputText = document.getElementById('input-text').value;
+            var parser = new DOMParser();
+            var xmlDoc = parser.parseFromString(inputText, 'text/html');
+            fnameWrapDivs = xmlDoc.querySelectorAll('div.fname-wrap');
+            var processedNodes = Array.from(fnameWrapDivs).map(div => {
+                name = div.querySelector('.form-control').innerText;
+                href = div.querySelector('a[href]').innerText;
+                return {name, href};
+            });
+            result = JSON.stringify(processedNodes);
+        }
+    </script>
+</body>
+</html>

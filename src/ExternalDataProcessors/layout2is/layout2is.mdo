@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mdclass:ExternalDataProcessor xmlns:mdclass="http://g5.1c.ru/v8/dt/metadata/mdclass" uuid="b143a62b-a869-450e-a677-4d3cc3bfe482">
+  <producedTypes>
+    <objectType typeId="7a27fa44-71a9-460f-b49b-c704db5a8199" valueTypeId="c0ab3939-4bd1-48be-b824-d6ced0305b53"/>
+  </producedTypes>
+  <name>layout2is</name>
+  <synonym>
+    <key>ru</key>
+    <value>Верстка в Infostart</value>
+  </synonym>
+  <containedObjects classId="c3831ec8-d8d5-4f93-8a22-f9bfae07327f" objectId="1044a9b8-a120-4864-b969-baa348ba8dc9"/>
+  <defaultForm>ExternalDataProcessor.layout2is.Form.Форма</defaultForm>
+  <forms uuid="bf4a68c4-af84-45e5-8a30-c784d5a9bc41">
+    <name>Форма</name>
+    <synonym>
+      <key>ru</key>
+      <value>Форма</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
+  <forms uuid="3a47c2b7-ebe8-4807-b423-62aafe19d274">
+    <name>ДиалогВставкиДанныхИзHTML</name>
+    <synonym>
+      <key>ru</key>
+      <value>Диалог вставки данных из HTML</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
+  <templates uuid="c8b78ba6-f586-49da-8ca9-c8222eb84bd0">
+    <name>СтраницаHTML</name>
+    <synonym>
+      <key>ru</key>
+      <value>Страница HTML</value>
+    </synonym>
+    <templateType>TextDocument</templateType>
+  </templates>
+</mdclass:ExternalDataProcessor>
