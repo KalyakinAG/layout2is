@@ -3,7 +3,7 @@
 
 Обработка автоматизации подготовки статьи из формата Markdown для [публикации на Infostart](https://infostart.ru/1c/tools/2145718/) .
 
-[![Название статьи](https://infostart.ru/bitrix/templates/sandbox_empty/assets/tpl/abo/img/logo.svg)](https://infostart.ru/)
+[![Название статьи](https://infostart.ru/bitrix/templates/sandbox_empty/assets/tpl/abo/img/logo.svg)](https://infostart.ru/1c/tools/2145718/)
 
 Реализована следующая автоматизация:
 - Формирование оглавления
