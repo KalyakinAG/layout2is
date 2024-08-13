@@ -1,9 +1,9 @@
 # Верстка статей в Infostart
 ![Версия](https://img.shields.io/badge/Версия_1С-8.3.24-yellow)
 
-Обработка автоматизации подготовки статьи из формата Markdown для публикации на [Infostart](https://infostart.ru/) .
+Обработка автоматизации подготовки статьи из формата Markdown для [публикации на Infostart](https://infostart.ru/1c/tools/2145718/) .
 
-[![Название статьи](https://infostart.ru/bitrix/templates/sandbox_empty/assets/tpl/abo/img/logo.svg)](https://infostart.ru/1c/tools/2145718/)
+[![Название статьи](https://infostart.ru/bitrix/templates/sandbox_empty/assets/tpl/abo/img/logo.svg)](https://infostart.ru/)
 
 Реализована следующая автоматизация:
 - Формирование оглавления
