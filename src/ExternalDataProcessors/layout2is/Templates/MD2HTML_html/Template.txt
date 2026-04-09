@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown → HTML (showdown.js, id и URL‑кодировка ссылок)</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fafafa;
+            color: #222;
+        }
+        h1 {
+            color: #2c3e50;
+            border: none;
+            padding-bottom: 10px;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 1px solid #bdc3c7;
+            border-radius: 8px;
+            resize: vertical;
+            margin-bottom: 15px;
+        }
+        button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: 0.3s;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #2980b9;
+        }
+        .output-container {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .output-panel {
+            flex: 1 1 300px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 15px;
+            border: 1px solid #ddd;
+            position: relative;
+        }
+        .output-panel h3 {
+            margin-top: 0;
+            color: #16a085;
+            border-bottom: 1px solid #16a085;
+            padding-bottom: 8px;
+        }
+        .raw-html {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .preview {
+            padding: 15px;
+            border: 1px dashed #b0bec5;
+            border-radius: 6px;
+            background: #fefefe;
+            min-height: 200px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .preview :target {
+            background-color: #fffacd;
+            border-left: 3px solid #e67e22;
+            padding-left: 5px;
+            transition: 0.3s;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: #27ae60;
+            padding: 6px 12px;
+            font-size: 14px;
+            margin: 0;
+            border-radius: 4px;
+        }
+        .copy-btn:hover {
+            background: #219a52;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2c3e50;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 1000;
+            pointer-events: none;
+            font-size: 14px;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <h1>Конвертер Markdown → HTML (showdown.js, id и URLкодировка)</h1>
+    <textarea id="markdown-input" placeholder="Введите Markdown..."># Демонстрация русских заголовков
+
+## Заголовок второго уровня с пробелами
+
+А здесь обычный абзац. Обратите внимание на **жирный** и *курсив*.
+
+### Третий уровень: ещё один пример
+
+[Ссылка на первый заголовок](#демонстрация-русских-заголовков)  
+[Ссылка на заголовок второго уровня](#заголовок-второго-уровня-с-пробелами)
+
+#### Заголовок 4-го уровня (тоже получит id)
+
+- Элемент списка
+- Элемент списка
+
+##### Заголовок 5-го уровня с русским текстом и пробелами
+
+###### И наконец заголовок 6-го уровня: Проверка
+
+> Цитата с [ссылкой на h3](#третий-уровень-ещё-один-пример)</textarea>
+    <br>
+    <button id="convert-btn">Конвертировать</button>
+    <button id="copy-html-btn">Скопировать HTML</button>
+    <div class="output-container">
+        <div class="output-panel">
+            <h3>Сгенерированный HTML</h3>
+            <pre id="html-output" class="raw-html"></pre>
+        </div>
+        <div class="output-panel">
+            <h3>Предпросмотр</h3>
+            <div id="preview" class="preview"></div>
+        </div>
+    </div>
+
+    <div id="toast" class="toast">Скопировано в буфер обмена!</div>
+
+    <!-- Подключаем showdown.js -->
+    <script src="showdown.min.js"></script>
+
+    <script>
+        const input = document.getElementById('markdown-input');
+        const btn = document.getElementById('convert-btn');
+        const htmlOutput = document.getElementById('html-output');
+        const preview = document.getElementById('preview');
+        const copyBtn = document.getElementById('copy-html-btn');
+        const toast = document.getElementById('toast');
+
+        // Конфигурация showdown
+        const converter = new showdown.Converter({
+        	tables: true,
+            headerLevelStart: 1,
+            simplifiedAutoLink: true,
+            excludeTrailingPunctuationFromURLs: true,
+            tasklists: true,
+            noHeaderId: true,
+            parseImgDimensions: true
+        });
+
+        // Генерация id из текста заголовка (без URL-кодировки, просто slug)
+        function generateId(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\u0400-\u04FF]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        // Добавление id заголовкам
+        function addHeaderIds(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const headers = div.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headers.forEach(h => {
+                if (!h.id) {
+                    h.id = generateId(h.textContent);
+                }
+            });
+            return div.innerHTML;
+        }
+
+        // URL-кодирование русских символов в якорях
+        function encodeAnchorLinks(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const links = div.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                let href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    const fragment = href.substring(1);
+                    // Кодируем фрагмент, сохраняя дефисы и буквы? encodeURIComponent кодирует всё, кроме букв, цифр, дефиса, подчёркивания, точки, тильды.
+                    // Нам нужно закодировать только русские и другие не-ASCII, но оставить дефисы и т.п. encodeURIComponent подходит.
+                    const encodedFragment = encodeURIComponent(fragment);
+                    link.setAttribute('href', '#' + encodedFragment);
+                }
+            });
+            return div.innerHTML;
+        }
+
+        // Постобработка таблиц: добавляем атрибуты border, cellpadding, cellspacing, style
+        function processTables(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const tables = div.querySelectorAll('table');
+            tables.forEach(table => {
+                // Устанавливаем требуемые атрибуты, если их нет
+                if (!table.hasAttribute('border')) table.setAttribute('border', '1');
+                if (!table.hasAttribute('cellpadding')) table.setAttribute('cellpadding', '1');
+                if (!table.hasAttribute('cellspacing')) table.setAttribute('cellspacing', '1');
+            });
+            return div.innerHTML;
+        }
+
+        function convert() {
+            try {
+                const markdown = input.value;
+                let rawHtml = converter.makeHtml(markdown);
+                // Добавляем id заголовкам
+                let withIds = addHeaderIds(rawHtml);
+                // Кодируем якоря в ссылках
+                let withEncodedLinks = encodeAnchorLinks(withIds);
+                // Обрабатываем таблицы
+                let finalHtml = processTables(withEncodedLinks);
+                htmlOutput.textContent = finalHtml;
+                preview.innerHTML = finalHtml;
+            } catch (error) {
+            	alert(`Произошла ошибка: ${error.message}`);
+            }
+        }
+
+        // Копирование в буфер
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast();
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                if (success) showToast();
+                else alert('Не удалось скопировать текст. Пожалуйста, скопируйте вручную.');
+            }
+        }
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        copyBtn.addEventListener('click', () => {
+            const htmlCode = htmlOutput.textContent;
+            if (htmlCode) copyToClipboard(htmlCode);
+            else alert('Нет сгенерированного HTML для копирования.');
+        });
+
+        convert();
+        btn.addEventListener('click', convert);
+        input.addEventListener('blur', convert);
+    </script>
+</body>
+</html>

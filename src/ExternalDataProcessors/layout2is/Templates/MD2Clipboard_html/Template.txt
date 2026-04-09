@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <!-- Подключаем showdown.js -->
+    <script src="showdown.min.js"></script>
+
+    <script>
+        // Конфигурация showdown
+        const converter = new showdown.Converter({
+            tables: true,
+            headerLevelStart: 1,
+            simplifiedAutoLink: true,
+            excludeTrailingPunctuationFromURLs: true,
+            tasklists: true,
+            noHeaderId: true,
+            parseImgDimensions: true
+        });
+
+        // Генерация id из текста заголовка (без URL-кодировки, просто slug)
+        function generateId(text) {
+            return text
+                .toLowerCase()
+                .replace(/[^\w\u0400-\u04FF]+/g, '-')
+                .replace(/^-+|-+$/g, '');
+        }
+
+        // Добавление id заголовкам
+        function addHeaderIds(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const headers = div.querySelectorAll('h1, h2, h3, h4, h5, h6');
+            headers.forEach(h => {
+                if (!h.id) {
+                    h.id = generateId(h.textContent);
+                }
+            });
+            return div.innerHTML;
+        }
+
+        // URL-кодирование русских символов в якорях
+        function encodeAnchorLinks(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const links = div.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                let href = link.getAttribute('href');
+                if (href && href.startsWith('#')) {
+                    const fragment = href.substring(1);
+                    // Кодируем фрагмент, сохраняя дефисы и буквы? encodeURIComponent кодирует всё, кроме букв, цифр, дефиса, подчёркивания, точки, тильды.
+                    // Нам нужно закодировать только русские и другие не-ASCII, но оставить дефисы и т.п. encodeURIComponent подходит.
+                    const encodedFragment = encodeURIComponent(fragment);
+                    link.setAttribute('href', '#' + encodedFragment);
+                }
+            });
+            return div.innerHTML;
+        }
+        
+        // Постобработка таблиц: добавляем атрибуты border, cellpadding, cellspacing, style
+        function processTables(html) {
+            const div = document.createElement('div');
+            div.innerHTML = html;
+            const tables = div.querySelectorAll('table');
+            tables.forEach(table => {
+                // Устанавливаем требуемые атрибуты, если их нет
+                if (!table.hasAttribute('border')) table.setAttribute('border', '1');
+                if (!table.hasAttribute('cellpadding')) table.setAttribute('cellpadding', '1');
+                if (!table.hasAttribute('cellspacing')) table.setAttribute('cellspacing', '1');
+            });
+            return div.innerHTML;
+        }
+
+        function convert(markdown) {
+            try {
+                let rawHtml = converter.makeHtml(markdown);
+                // Добавляем id заголовкам
+                let withIds = addHeaderIds(rawHtml);
+                // Кодируем якоря в ссылках
+                let withEncodedLinks = encodeAnchorLinks(withIds);
+                // Обрабатываем таблицы
+                let finalHtml = processTables(withEncodedLinks);
+                return finalHtml;
+            } catch (error) {
+            	alert(`Произошла ошибка: ${error.message}`);
+            }
+        }
+
+        // Копирование в буфер
+        async function copyToClipboard(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showToast();
+            } catch (err) {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                const success = document.execCommand('copy');
+                document.body.removeChild(textarea);
+                if (success) showToast();
+                else alert('Не удалось скопировать текст. Пожалуйста, скопируйте вручную.');
+            }
+        }
+
+        function showToast() {
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2000);
+        }
+
+        copyBtn.addEventListener('click', () => {
+            const htmlCode = htmlOutput.textContent;
+            if (htmlCode) copyToClipboard(htmlCode);
+            else alert('Нет сгенерированного HTML для копирования.');
+        });
+
+        convert();
+        btn.addEventListener('click', convert);
+        input.addEventListener('blur', convert);
+    </script>
+</body>
+</html>

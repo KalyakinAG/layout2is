@@ -6,7 +6,7 @@
   <name>layout2is</name>
   <synonym>
     <key>ru</key>
-    <value>Верстка в Infostart</value>
+    <value>Верстка публикации Markdown для Infostart.Ru</value>
   </synonym>
   <containedObjects classId="c3831ec8-d8d5-4f93-8a22-f9bfae07327f" objectId="1044a9b8-a120-4864-b969-baa348ba8dc9"/>
   <defaultForm>ExternalDataProcessor.layout2is.Form.Форма</defaultForm>
@@ -20,19 +20,52 @@
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <forms uuid="3a47c2b7-ebe8-4807-b423-62aafe19d274">
-    <name>ДиалогВставкиДанныхИзHTML</name>
+    <name>ImageLinkExtractor</name>
     <synonym>
       <key>ru</key>
-      <value>Диалог вставки данных из HTML</value>
+      <value>Image link extractor</value>
+    </synonym>
+    <usePurposes>PersonalComputer</usePurposes>
+    <usePurposes>MobileDevice</usePurposes>
+  </forms>
+  <forms uuid="a1c24e06-ecaf-4513-bb3f-07027d5398e4">
+    <name>MD2HTML</name>
+    <synonym>
+      <key>ru</key>
+      <value>MD to HTML</value>
     </synonym>
     <usePurposes>PersonalComputer</usePurposes>
     <usePurposes>MobileDevice</usePurposes>
   </forms>
   <templates uuid="c8b78ba6-f586-49da-8ca9-c8222eb84bd0">
-    <name>СтраницаHTML</name>
+    <name>ImageLinkExtractor_html</name>
     <synonym>
       <key>ru</key>
-      <value>Страница HTML</value>
+      <value>Image link extractor html</value>
+    </synonym>
+    <templateType>TextDocument</templateType>
+  </templates>
+  <templates uuid="e1cfd4a4-8cdc-4158-87ac-99f641da50dc">
+    <name>MD2HTML_html</name>
+    <synonym>
+      <key>ru</key>
+      <value>MD to HTML</value>
+    </synonym>
+    <templateType>TextDocument</templateType>
+  </templates>
+  <templates uuid="8ec94df4-14d8-417e-9ea5-9a2a8bea514e">
+    <name>showdown_min_js</name>
+    <synonym>
+      <key>ru</key>
+      <value>showdown.min.js</value>
+    </synonym>
+    <templateType>TextDocument</templateType>
+  </templates>
+  <templates uuid="85d50f92-96f6-4497-ae65-63891d80ed93">
+    <name>MD2Clipboard_html</name>
+    <synonym>
+      <key>ru</key>
+      <value>MD to clipboard</value>
     </synonym>
     <templateType>TextDocument</templateType>
   </templates>
