@@ -1,5 +1,5 @@
 # Верстка статей в Infostart
-![Версия](https://img.shields.io/badge/Версия_1С-8.3.24-yellow)
+![Версия](https://img.shields.io/badge/Версия_1С-8.3.27-yellow)
 
 Обработка автоматизации подготовки статьи из формата Markdown для [публикации на Infostart](https://infostart.ru/1c/tools/2145718/) .
 
